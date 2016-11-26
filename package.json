@@ -2,7 +2,16 @@
   "name": "time-elements",
   "version": "0.6.1",
   "main": "time-elements.js",
+  "scripts": {
+    "install": "bower install",
+    "build": "npm run babel",
+    "babel": "babel time-elements.js --out-file time-elements.es5.js --presets es2015",
+    "test": "node-qunit-phantomjs ./test/test.html --verbose",
+    "lint": "jshint *.js test/*.js"
+  },
   "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
     "bower": "1.3.8",
     "jshint": "2.5.2",
     "node-qunit-phantomjs": "0.2.2"

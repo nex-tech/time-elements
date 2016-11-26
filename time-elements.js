@@ -2,9 +2,9 @@
   'use strict';
 
   // Shout out to https://github.com/basecamp/local_time/blob/master/app/assets/javascripts/local_time.js.coffee
-  var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  var observedAttributes = ['datetime', 'year', 'month', 'day', 'weekday', 'hour', 'minute', 'second'];
+  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const observedAttributes = ['datetime', 'year', 'month', 'day', 'weekday', 'hour', 'minute', 'second'];
 
   function pad(num) {
     return ('0' + num).slice(-2);
@@ -244,406 +244,377 @@
     }
   }
 
-  function RelativeTime(date) {
-    this.date = date;
-  }
+  class RelativeTime {
 
-  RelativeTime.prototype.toString = function () {
-    var ago = this.timeElapsed();
-    if (ago) {
-      return ago;
-    } else {
-      var ahead = this.timeAhead();
-      if (ahead) {
-        return ahead;
+    constructor(date) {
+      this.date = date;
+    }
+
+    toString() {
+      var ago = this.timeElapsed();
+      if (ago) {
+        return ago;
       } else {
-        return 'on ' + this.formatDate();
-      }
-    }
-  };
-
-  RelativeTime.prototype.timeElapsed = function () {
-    var ms = new Date().getTime() - this.date.getTime();
-    var sec = Math.round(ms / 1000);
-    var min = Math.round(sec / 60);
-    var hr = Math.round(min / 60);
-    var day = Math.round(hr / 24);
-    if (ms >= 0 && day < 30) {
-      return this.timeAgoFromMs(ms);
-    }
-    else {
-      return null;
-    }
-  };
-
-  RelativeTime.prototype.timeAhead = function () {
-    var ms = this.date.getTime() - (new Date().getTime());
-    var sec = Math.round(ms / 1000);
-    var min = Math.round(sec / 60);
-    var hr = Math.round(min / 60);
-    var day = Math.round(hr / 24);
-    if (ms >= 0 && day < 30) {
-      return this.timeUntil();
-    }
-    else {
-      return null;
-    }
-  };
-
-  RelativeTime.prototype.timeAgo = function () {
-    var ms = new Date().getTime() - this.date.getTime();
-    return this.timeAgoFromMs(ms);
-  };
-
-  RelativeTime.prototype.timeAgoFromMs = function (ms) {
-    var sec = Math.round(ms / 1000);
-    var min = Math.round(sec / 60);
-    var hr = Math.round(min / 60);
-    var day = Math.round(hr / 24);
-    var month = Math.round(day / 30);
-    var year = Math.round(month / 12);
-    if (ms < 0) {
-      return 'just now';
-    } else if (sec < 10) {
-      return 'just now';
-    } else if (sec < 45) {
-      return sec + ' seconds ago';
-    } else if (sec < 90) {
-      return 'a minute ago';
-    } else if (min < 45) {
-      return min + ' minutes ago';
-    } else if (min < 90) {
-      return 'an hour ago';
-    } else if (hr < 24) {
-      return hr + ' hours ago';
-    } else if (hr < 36) {
-      return 'a day ago';
-    } else if (day < 30) {
-      return day + ' days ago';
-    } else if (day < 45) {
-      return 'a month ago';
-    } else if (month < 12) {
-      return month + ' months ago';
-    } else if (month < 18) {
-      return 'a year ago';
-    } else {
-      return year + ' years ago';
-    }
-  };
-
-  RelativeTime.prototype.microTimeAgo = function () {
-    var ms = new Date().getTime() - this.date.getTime();
-    var sec = Math.round(ms / 1000);
-    var min = Math.round(sec / 60);
-    var hr = Math.round(min / 60);
-    var day = Math.round(hr / 24);
-    var month = Math.round(day / 30);
-    var year = Math.round(month / 12);
-    if (min < 1) {
-      return '1m';
-    } else if (min < 60) {
-      return min + 'm';
-    } else if (hr < 24) {
-      return hr + 'h';
-    } else if (day < 365) {
-      return day + 'd';
-    } else {
-      return year + 'y';
-    }
-  };
-
-  RelativeTime.prototype.timeUntil = function () {
-    var ms = this.date.getTime() - (new Date().getTime());
-    return this.timeUntilFromMs(ms);
-  };
-
-  RelativeTime.prototype.timeUntilFromMs = function (ms) {
-    var sec = Math.round(ms / 1000);
-    var min = Math.round(sec / 60);
-    var hr = Math.round(min / 60);
-    var day = Math.round(hr / 24);
-    var month = Math.round(day / 30);
-    var year = Math.round(month / 12);
-    if (month >= 18) {
-      return year + ' years from now';
-    } else if (month >= 12) {
-      return 'a year from now';
-    } else if (day >= 45) {
-      return month + ' months from now';
-    } else if (day >= 30) {
-      return 'a month from now';
-    } else if (hr >= 36) {
-      return day + ' days from now';
-    } else if (hr >= 24) {
-      return 'a day from now';
-    } else if (min >= 90) {
-      return hr + ' hours from now';
-    } else if (min >= 45) {
-      return 'an hour from now';
-    } else if (sec >= 90) {
-      return min + ' minutes from now';
-    } else if (sec >= 45) {
-      return 'a minute from now';
-    } else if (sec >= 10) {
-      return sec + ' seconds from now';
-    } else {
-      return 'just now';
-    }
-  };
-
-  RelativeTime.prototype.microTimeUntil = function () {
-    var ms = this.date.getTime() - (new Date().getTime());
-    var sec = Math.round(ms / 1000);
-    var min = Math.round(sec / 60);
-    var hr = Math.round(min / 60);
-    var day = Math.round(hr / 24);
-    var month = Math.round(day / 30);
-    var year = Math.round(month / 12);
-    if (day >= 365) {
-      return year + 'y';
-    } else if (hr >= 24) {
-      return day + 'd';
-    } else if (min >= 60) {
-      return hr + 'h';
-    } else if (min > 1) {
-      return min + 'm';
-    } else {
-      return '1m';
-    }
-  };
-
-  RelativeTime.prototype.formatDate = function () {
-    var format = isDayFirst() ? '%e %b' : '%b %e';
-    if (!isThisYear(this.date)) {
-      format += isYearSeparator() ? ', %Y' : ' %Y';
-    }
-    return strftime(this.date, format);
-  };
-
-  RelativeTime.prototype.formatTime = function () {
-    var formatter = makeFormatter({ hour: 'numeric', minute: '2-digit' });
-    if (formatter) {
-      return formatter.format(this.date);
-    } else {
-      return strftime(this.date, '%l:%M%P');
-    }
-  };
-
-  function ExtendedTimeElement() {
-    var instance = HTMLElement.call(this);
-    return instance;
-  }
-
-  ExtendedTimeElement.prototype = Object.create(HTMLElement.prototype);
-
-  ExtendedTimeElement.prototype.constructor = ExtendedTimeElement;
-
-  // Internal: Refresh the time element's formatted date when an attribute changes.
-  //
-  // Returns nothing.
-  ExtendedTimeElement.prototype.attributeChangedCallback = function (attrName, oldValue, newValue) {
-    if (attrName === 'datetime') {
-      var millis = Date.parse(newValue);
-      this._date = isNaN(millis) ? null : new Date(millis);
-    }
-
-    var title = this.getFormattedTitle();
-    if (title) {
-      this.setAttribute('title', title);
-    }
-
-    var text = this.getFormattedDate();
-    if (text) {
-      this.textContent = text;
-    }
-  };
-
-  // Internal: Format the ISO 8601 timestamp according to the user agent's
-  // locale-aware formatting rules. The element's existing `title` attribute
-  // value takes precedence over this custom format.
-  //
-  // Returns a formatted time String.
-  ExtendedTimeElement.prototype.getFormattedTitle = function () {
-    if (!this._date) {
-      return;
-    }
-
-    if (this.hasAttribute('title')) {
-      return this.getAttribute('title');
-    }
-
-    var formatter = makeFormatter({ day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
-    if (formatter) {
-      return formatter.format(this._date);
-    } else {
-      try {
-        return this._date.toLocaleString();
-      } catch (e) {
-        if (e instanceof RangeError) {
-          return this._date.toString();
+        var ahead = this.timeAhead();
+        if (ahead) {
+          return ahead;
         } else {
-          throw e;
+          return 'on ' + this.formatDate();
         }
       }
     }
-  };
 
-  function RelativeTimeElement() {
-    var instance = ExtendedTimeElement.call(this);
-    return instance;
-  }
-
-  RelativeTimeElement.observedAttributes = observedAttributes;
-
-  RelativeTimeElement.prototype = Object.create(ExtendedTimeElement.prototype);
-
-  RelativeTimeElement.prototype.constructor = RelativeTimeElement;
-
-  RelativeTimeElement.prototype.getFormattedDate = function () {
-    if (this._date) {
-      return new RelativeTime(this._date).toString();
-    }
-  };
-
-  RelativeTimeElement.prototype.connectedCallback = function () {
-    var value = this.getAttribute('datetime');
-    if (value) {
-      this.attributeChangedCallback('datetime', null, value);
-    }
-
-    nowElements.push(this);
-
-    if (!updateNowElementsId) {
-      updateNowElements();
-      updateNowElementsId = setInterval(updateNowElements, 60 * 1000);
-    }
-  };
-
-  RelativeTimeElement.prototype.disconnectedCallback = function () {
-    var ix = nowElements.indexOf(this);
-    if (ix !== -1) {
-      nowElements.splice(ix, 1);
-    }
-
-    if (!nowElements.length) {
-      if (updateNowElementsId) {
-        clearInterval(updateNowElementsId);
-        updateNowElementsId = null;
+    timeElapsed() {
+      var ms = new Date().getTime() - this.date.getTime();
+      var sec = Math.round(ms / 1000);
+      var min = Math.round(sec / 60);
+      var hr = Math.round(min / 60);
+      var day = Math.round(hr / 24);
+      if (ms >= 0 && day < 30) {
+        return this.timeAgoFromMs(ms);
+      }
+      else {
+        return null;
       }
     }
-  };
 
-  function TimeAgoElement() {
-    var instance = RelativeTimeElement.call(this);
-    return instance;
-  }
+    timeAhead() {
+      var ms = this.date.getTime() - (new Date().getTime());
+      var sec = Math.round(ms / 1000);
+      var min = Math.round(sec / 60);
+      var hr = Math.round(min / 60);
+      var day = Math.round(hr / 24);
+      if (ms >= 0 && day < 30) {
+        return this.timeUntil();
+      }
+      else {
+        return null;
+      }
+    }
 
-  TimeAgoElement.observedAttributes = observedAttributes;
+    timeAgo() {
+      var ms = new Date().getTime() - this.date.getTime();
+      return this.timeAgoFromMs(ms);
+    }
 
-  TimeAgoElement.prototype = Object.create(RelativeTimeElement.prototype);
-
-  TimeAgoElement.prototype.constructor = TimeAgoElement;
-
-  TimeAgoElement.prototype.getFormattedDate = function () {
-    if (this._date) {
-      var format = this.getAttribute('format');
-      if (format === 'micro') {
-        return new RelativeTime(this._date).microTimeAgo();
+    timeAgoFromMs(ms) {
+      var sec = Math.round(ms / 1000);
+      var min = Math.round(sec / 60);
+      var hr = Math.round(min / 60);
+      var day = Math.round(hr / 24);
+      var month = Math.round(day / 30);
+      var year = Math.round(month / 12);
+      if (ms < 0) {
+        return 'just now';
+      } else if (sec < 10) {
+        return 'just now';
+      } else if (sec < 45) {
+        return sec + ' seconds ago';
+      } else if (sec < 90) {
+        return 'a minute ago';
+      } else if (min < 45) {
+        return min + ' minutes ago';
+      } else if (min < 90) {
+        return 'an hour ago';
+      } else if (hr < 24) {
+        return hr + ' hours ago';
+      } else if (hr < 36) {
+        return 'a day ago';
+      } else if (day < 30) {
+        return day + ' days ago';
+      } else if (day < 45) {
+        return 'a month ago';
+      } else if (month < 12) {
+        return month + ' months ago';
+      } else if (month < 18) {
+        return 'a year ago';
       } else {
-        return new RelativeTime(this._date).timeAgo();
+        return year + ' years ago';
       }
     }
-  };
 
-  function TimeUntilElement() {
-    var instance = RelativeTimeElement.call(this);
-    return instance;
-  }
-
-  TimeUntilElement.observedAttributes = observedAttributes;
-
-  TimeUntilElement.prototype = Object.create(RelativeTimeElement.prototype);
-
-  TimeUntilElement.prototype.constructor = TimeUntilElement;
-
-  TimeUntilElement.prototype.getFormattedDate = function () {
-    if (this._date) {
-      var format = this.getAttribute('format');
-      if (format === 'micro') {
-        return new RelativeTime(this._date).microTimeUntil();
+    microTimeAgo() {
+      var ms = new Date().getTime() - this.date.getTime();
+      var sec = Math.round(ms / 1000);
+      var min = Math.round(sec / 60);
+      var hr = Math.round(min / 60);
+      var day = Math.round(hr / 24);
+      var month = Math.round(day / 30);
+      var year = Math.round(month / 12);
+      if (min < 1) {
+        return '1m';
+      } else if (min < 60) {
+        return min + 'm';
+      } else if (hr < 24) {
+        return hr + 'h';
+      } else if (day < 365) {
+        return day + 'd';
       } else {
-        return new RelativeTime(this._date).timeUntil();
+        return year + 'y';
       }
     }
-  };
 
-  function LocalTimeElement() {
-    var instance = ExtendedTimeElement.call(this);
-    return instance;
+    timeUntil() {
+      var ms = this.date.getTime() - (new Date().getTime());
+      return this.timeUntilFromMs(ms);
+    }
+
+    timeUntilFromMs(ms) {
+      var sec = Math.round(ms / 1000);
+      var min = Math.round(sec / 60);
+      var hr = Math.round(min / 60);
+      var day = Math.round(hr / 24);
+      var month = Math.round(day / 30);
+      var year = Math.round(month / 12);
+      if (month >= 18) {
+        return year + ' years from now';
+      } else if (month >= 12) {
+        return 'a year from now';
+      } else if (day >= 45) {
+        return month + ' months from now';
+      } else if (day >= 30) {
+        return 'a month from now';
+      } else if (hr >= 36) {
+        return day + ' days from now';
+      } else if (hr >= 24) {
+        return 'a day from now';
+      } else if (min >= 90) {
+        return hr + ' hours from now';
+      } else if (min >= 45) {
+        return 'an hour from now';
+      } else if (sec >= 90) {
+        return min + ' minutes from now';
+      } else if (sec >= 45) {
+        return 'a minute from now';
+      } else if (sec >= 10) {
+        return sec + ' seconds from now';
+      } else {
+        return 'just now';
+      }
+    }
+
+    microTimeUntil() {
+      var ms = this.date.getTime() - (new Date().getTime());
+      var sec = Math.round(ms / 1000);
+      var min = Math.round(sec / 60);
+      var hr = Math.round(min / 60);
+      var day = Math.round(hr / 24);
+      var month = Math.round(day / 30);
+      var year = Math.round(month / 12);
+      if (day >= 365) {
+        return year + 'y';
+      } else if (hr >= 24) {
+        return day + 'd';
+      } else if (min >= 60) {
+        return hr + 'h';
+      } else if (min > 1) {
+        return min + 'm';
+      } else {
+        return '1m';
+      }
+    }
+
+    formatDate() {
+      var format = isDayFirst() ? '%e %b' : '%b %e';
+      if (!isThisYear(this.date)) {
+        format += isYearSeparator() ? ', %Y' : ' %Y';
+      }
+      return strftime(this.date, format);
+    }
+
+    formatTime() {
+      var formatter = makeFormatter({ hour: 'numeric', minute: '2-digit' });
+      if (formatter) {
+        return formatter.format(this.date);
+      } else {
+        return strftime(this.date, '%l:%M%P');
+      }
+    }
   }
 
-  LocalTimeElement.observedAttributes = observedAttributes;
+  class ExtendedTimeElement extends HTMLElement {
 
-  LocalTimeElement.prototype = Object.create(ExtendedTimeElement.prototype);
+    // Internal: Refresh the time element's formatted date when an attribute changes.
+    //
+    // Returns nothing.
+    attributeChangedCallback(attrName, oldValue, newValue) {
+      if (attrName === 'datetime') {
+        var millis = Date.parse(newValue);
+        this._date = isNaN(millis) ? null : new Date(millis);
+      }
 
-  LocalTimeElement.prototype.constructor = LocalTimeElement;
+      var title = this.getFormattedTitle();
+      if (title) {
+        this.setAttribute('title', title);
+      }
 
-  LocalTimeElement.prototype.connectedCallback = function () {
-    var value;
-    if (value = this.getAttribute('datetime')) {
-      this.attributeChangedCallback('datetime', null, value);
-    }
-    if (value = this.getAttribute('format')) {
-      this.attributeChangedCallback('format', null, value);
-    }
-  };
-
-  // Formats the element's date, in the user's current locale, according to
-  // the formatting attribute values. Values are not passed straight through to
-  // an Intl.DateTimeFormat instance so that weekday and month names are always
-  // displayed in English, for now.
-  //
-  // Supported attributes are:
-  //
-  //   weekday - "short", "long"
-  //   year    - "numeric", "2-digit"
-  //   month   - "short", "long"
-  //   day     - "numeric", "2-digit"
-  //   hour    - "numeric", "2-digit"
-  //   minute  - "numeric", "2-digit"
-  //   second  - "numeric", "2-digit"
-  //
-  // Returns a formatted time String.
-  LocalTimeElement.prototype.getFormattedDate = function () {
-    if (!this._date) {
-      return;
+      var text = this.getFormattedDate();
+      if (text) {
+        this.textContent = text;
+      }
     }
 
-    var date = formatDate(this) || '';
-    var time = formatTime(this) || '';
-    return (date + ' ' + time).trim();
-  };
+    // Internal: Format the ISO 8601 timestamp according to the user agent's
+    // locale-aware formatting rules. The element's existing `title` attribute
+    // value takes precedence over this custom format.
+    //
+    // Returns a formatted time String.
+    getFormattedTitle() {
+      if (!this._date) {
+        return;
+      }
 
-  // Public: RelativeTimeElement constructor.
-  //
-  //   var time = new RelativeTimeElement()
-  //   # => <relative-time></relative-time>
-  //
-  window.RelativeTimeElement = RelativeTimeElement;
+      if (this.hasAttribute('title')) {
+        return this.getAttribute('title');
+      }
+
+      var formatter = makeFormatter({ day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+      if (formatter) {
+        return formatter.format(this._date);
+      } else {
+        try {
+          return this._date.toLocaleString();
+        } catch (e) {
+          if (e instanceof RangeError) {
+            return this._date.toString();
+          } else {
+            throw e;
+          }
+        }
+      }
+    }
+
+  }
+
+  class RelativeTimeElement extends ExtendedTimeElement {
+
+    static get observedAttributes() {
+      return observedAttributes;
+    }
+
+    connectedCallback() {
+      var value = this.getAttribute('datetime');
+      if (value) {
+        this.attributeChangedCallback('datetime', null, value);
+      }
+
+      nowElements.push(this);
+
+      if (!updateNowElementsId) {
+        updateNowElements();
+        updateNowElementsId = setInterval(updateNowElements, 60 * 1000);
+      }
+    }
+
+    disconnectedCallback() {
+      var ix = nowElements.indexOf(this);
+      if (ix !== -1) {
+        nowElements.splice(ix, 1);
+      }
+
+      if (!nowElements.length) {
+        if (updateNowElementsId) {
+          clearInterval(updateNowElementsId);
+          updateNowElementsId = null;
+        }
+      }
+    }
+
+    getFormattedDate() {
+      if (this._date) {
+        return new RelativeTime(this._date).toString();
+      }
+    }
+
+  }
+
+  class TimeAgoElement extends RelativeTimeElement {
+
+    static get observedAttributes() {
+      return observedAttributes;
+    }
+
+    getFormattedDate() {
+      if (this._date) {
+        var format = this.getAttribute('format');
+        if (format === 'micro') {
+          return new RelativeTime(this._date).microTimeAgo();
+        } else {
+          return new RelativeTime(this._date).timeAgo();
+        }
+      }
+    }
+
+  }
+
+  class TimeUntilElement extends RelativeTimeElement {
+
+    static get observedAttributes() {
+      return observedAttributes;
+    }
+
+    getFormattedDate() {
+      if (this._date) {
+        var format = this.getAttribute('format');
+        if (format === 'micro') {
+          return new RelativeTime(this._date).microTimeUntil();
+        } else {
+          return new RelativeTime(this._date).timeUntil();
+        }
+      }
+    }
+
+  }
+
+  class LocalTimeElement extends ExtendedTimeElement {
+
+    static get observedAttributes() {
+      return observedAttributes;
+    }
+
+    connectedCallback() {
+      var value;
+      if (value = this.getAttribute('datetime')) {
+        this.attributeChangedCallback('datetime', null, value);
+      }
+      if (value = this.getAttribute('format')) {
+        this.attributeChangedCallback('format', null, value);
+      }
+    }
+
+    // Formats the element's date, in the user's current locale, according to
+    // the formatting attribute values. Values are not passed straight through to
+    // an Intl.DateTimeFormat instance so that weekday and month names are always
+    // displayed in English, for now.
+    //
+    // Supported attributes are:
+    //
+    //   weekday - "short", "long"
+    //   year    - "numeric", "2-digit"
+    //   month   - "short", "long"
+    //   day     - "numeric", "2-digit"
+    //   hour    - "numeric", "2-digit"
+    //   minute  - "numeric", "2-digit"
+    //   second  - "numeric", "2-digit"
+    //
+    // Returns a formatted time String.
+    getFormattedDate() {
+      if (!this._date) {
+        return;
+      }
+
+      var date = formatDate(this) || '';
+      var time = formatTime(this) || '';
+      return (date + ' ' + time).trim();
+    }
+  }
+
   window.customElements.define('relative-time', RelativeTimeElement);
 
-  window.TimeAgoElement = TimeAgoElement;
   window.customElements.define('time-ago', TimeAgoElement);
 
-  window.TimeUntilElement = TimeUntilElement;
   window.customElements.define('time-until', TimeUntilElement);
 
-  // Public: LocalTimeElement constructor.
-  //
-  //   var time = new LocalTimeElement()
-  //   # => <local-time></local-time>
-  //
-  window.LocalTimeElement = LocalTimeElement;
   window.customElements.define('local-time', LocalTimeElement);
 
 })();
